@@ -1,0 +1,30 @@
+{
+  "name": "@mini-release/lite",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@mini-release/editor-core": "workspace:*",
+    "@mini-release/print-engine": "workspace:*",
+    "@mini-release/product-templates": "workspace:*",
+    "jspdf": "^3.0.3",
+    "konva": "^10.0.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-konva": "^19.0.7",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/node": "^24.7.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
+  }
+}

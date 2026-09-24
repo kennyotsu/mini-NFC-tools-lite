@@ -1,0 +1,10 @@
+{
+  "name": "mini-release-editor-lite",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "scripts": {
+    "build": "pnpm --filter @mini-release/lite build",
+    "typecheck": "pnpm --filter @mini-release/lite typecheck",
+    "verify:core": "pnpm --filter @mini-release/editor-core verify"
+  }
+}

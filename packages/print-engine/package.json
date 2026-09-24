@@ -1,0 +1,14 @@
+{
+  "name": "@mini-release/print-engine",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@mini-release/editor-core": "workspace:*",
+    "jspdf": "^3.0.3"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
