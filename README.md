@@ -35,7 +35,7 @@ The full platform's future `apps/web` can import these packages without carrying
 - `PrintLayout`: `{ pageSizeMm, placements, guides }`, built only from render plans;
 - `mmToPdfPt(mm)`: the sole millimetre-to-PDF conversion.
 
-`LiteSession` owns the resolved template identity and serializable `AssetRef` metadata; its UI adapter alone owns the DOM `File` and object URL. In the full product the same resolved template belongs to the parent DesignRevision. `packages/product-templates` owns immutable, versioned template definitions. Its general surface shape supports geometry, trim, bleed, safe area, fold/cut guides and `preview3dBinding`; `dev-mini-cd@0` merely instantiates rectangular geometry. Its print profile includes the Lite export PPI.
+`LiteSession` owns the resolved template identity and serializable asset metadata keyed by surface; its UI adapter alone owns DOM `File` instances and object URLs. In the full product the same resolved template belongs to the parent DesignRevision. `packages/product-templates` owns immutable, versioned template definitions. Its general surface shape supports geometry, trim, bleed, safe area, fold/cut guides and `preview3dBinding`; `dev-mini-cd@0` merely instantiates rectangular geometry. Its print profile includes the Lite export PPI.
 
 The browser adapter composes its temporary texture from `SurfaceRenderPlan`, then emits PDF from `PrintLayout`. A future server compositor/PDFKit adapter will consume those same contracts; it must never export a browser screenshot. The Lite's CSS 3D adapter consumes the browser-composited trim texture through `preview3dBinding`. Future R3F/GLB replaces that adapter and model only, never transform or layout math.
 

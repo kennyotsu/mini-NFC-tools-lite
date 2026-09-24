@@ -47,7 +47,7 @@ export type EditorDocument = {
 
 export type LiteSession = {
   template: ProductTemplate['identity']
-  asset: AssetRef | null
+  assets: Record<string, AssetRef | null>
   document: EditorDocument
 }
 

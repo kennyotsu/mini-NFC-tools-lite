@@ -37,7 +37,9 @@ export const uploadAsset = async (file: File): Promise<BrowserAsset> => {
 
 export const EditorCanvas = ({ template, document, activeSurfaceKey, asset, onDocumentChange }: EditorProps) => {
   const surface = template.surfaces.find((item) => item.key === activeSurfaceKey)!
-  const bounds = geometryBounds(surface.trim)
+  const trimBounds = geometryBounds(surface.trim)
+  const bleedBounds = geometryBounds(surface.bleed)
+  const safeBounds = surface.safe ? geometryBounds(surface.safe) : null
   const placement = document.surfaces[activeSurfaceKey].placement
   const [dragging, setDragging] = useState(false)
 
@@ -45,8 +47,8 @@ export const EditorCanvas = ({ template, document, activeSurfaceKey, asset, onDo
     if (!asset || !placement) return null
     const projection = projectPlacement(placement, canvasScale)
     return {
-      x: projection.xPx,
-      y: projection.yPx,
+      x: projection.xPx - bleedBounds.xMm * canvasScale,
+      y: projection.yPx - bleedBounds.yMm * canvasScale,
       width: projection.widthPx,
       height: projection.heightPx,
       offsetX: projection.offsetXPx,
@@ -55,15 +57,22 @@ export const EditorCanvas = ({ template, document, activeSurfaceKey, asset, onDo
       scaleX: projection.scaleX,
       scaleY: projection.scaleY
     }
-  }, [asset, placement])
+  }, [asset, bleedBounds.xMm, bleedBounds.yMm, placement])
 
   useEffect(() => () => setDragging(false), [activeSurfaceKey])
 
   return (
     <section className="editor-canvas" aria-label={`Рабочая область: ${surface.label}`}>
-      <Stage width={bounds.widthMm * canvasScale} height={bounds.heightMm * canvasScale}>
+      <Stage width={bleedBounds.widthMm * canvasScale} height={bleedBounds.heightMm * canvasScale}>
         <Layer>
-          <Rect width={bounds.widthMm * canvasScale} height={bounds.heightMm * canvasScale} fill="#171925" />
+          <Rect width={bleedBounds.widthMm * canvasScale} height={bleedBounds.heightMm * canvasScale} fill="#27181f" />
+          <Rect
+            x={(trimBounds.xMm - bleedBounds.xMm) * canvasScale}
+            y={(trimBounds.yMm - bleedBounds.yMm) * canvasScale}
+            width={trimBounds.widthMm * canvasScale}
+            height={trimBounds.heightMm * canvasScale}
+            fill="#171925"
+          />
           {imageProps && asset && (
             <KonvaImage
               image={asset.image}
@@ -71,12 +80,30 @@ export const EditorCanvas = ({ template, document, activeSurfaceKey, asset, onDo
               draggable
               onDragStart={() => setDragging(true)}
               onDragEnd={(event) => {
-                onDocumentChange(patchPlacement(document, activeSurfaceKey, placementFromProjectedCenter(placement!, event.target.x(), event.target.y(), canvasScale)))
+                onDocumentChange(patchPlacement(document, activeSurfaceKey, placementFromProjectedCenter(placement!, event.target.x() + bleedBounds.xMm * canvasScale, event.target.y() + bleedBounds.yMm * canvasScale, canvasScale)))
                 setDragging(false)
               }}
             />
           )}
-          <Rect width={bounds.widthMm * canvasScale} height={bounds.heightMm * canvasScale} stroke={dragging ? '#d7ff6e' : '#7980a1'} strokeWidth={1} listening={false} />
+          {safeBounds && <Rect
+            x={(safeBounds.xMm - bleedBounds.xMm) * canvasScale}
+            y={(safeBounds.yMm - bleedBounds.yMm) * canvasScale}
+            width={safeBounds.widthMm * canvasScale}
+            height={safeBounds.heightMm * canvasScale}
+            stroke="#d7ff6e"
+            dash={[5, 4]}
+            strokeWidth={1}
+            listening={false}
+          />}
+          <Rect
+            x={(trimBounds.xMm - bleedBounds.xMm) * canvasScale}
+            y={(trimBounds.yMm - bleedBounds.yMm) * canvasScale}
+            width={trimBounds.widthMm * canvasScale}
+            height={trimBounds.heightMm * canvasScale}
+            stroke={dragging ? '#d7ff6e' : '#d9dce8'}
+            strokeWidth={1}
+            listening={false}
+          />
         </Layer>
       </Stage>
     </section>

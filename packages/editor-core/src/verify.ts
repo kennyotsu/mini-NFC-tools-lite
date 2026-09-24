@@ -54,3 +54,7 @@ const asset = { id: 'cover', filename: 'cover.png', widthPx: 1200, heightPx: 120
 const coverPlacement = createCoverPlacement(template.surfaces[0], asset)
 assert.equal(placementCoversGeometry(coverPlacement, template.surfaces[0].bleed), true)
 assert.equal(Math.round(placementEffectivePpi(coverPlacement, asset)), 462)
+const fixtureBleed = template.surfaces[0].bleed
+if (fixtureBleed.type !== 'rect') throw new Error('Fixture bleed must be rectangular.')
+const bleedCanvasCenter = { x: coverPlacement.centerMm.x * 4 - fixtureBleed.rect.xMm * 4, y: coverPlacement.centerMm.y * 4 - fixtureBleed.rect.yMm * 4 }
+assert.deepEqual(placementFromProjectedCenter(coverPlacement, bleedCanvasCenter.x + fixtureBleed.rect.xMm * 4, bleedCanvasCenter.y + fixtureBleed.rect.yMm * 4, 4).centerMm, coverPlacement.centerMm)
