@@ -1,6 +1,6 @@
 import { createRenderPlan, type EditorDocument, type ProductTemplate } from '@mini-release/editor-core'
 
-type Preview3DProps = { template: ProductTemplate; document: EditorDocument; textures: Record<string, string> }
+type Preview3DProps = { template: ProductTemplate; document: EditorDocument; textures: Record<string, string | undefined> }
 
 export const Preview3D = ({ template, document, textures }: Preview3DProps) => {
   const textureFor = (binding: string) => {

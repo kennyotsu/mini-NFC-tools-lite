@@ -60,10 +60,10 @@ Each completed stage is independently reviewed against its exit condition. A sco
 
 ## Intentional cuts
 
-- one raster image asset per session, stored only in browser memory; its object URL is revoked when it is replaced or the page unmounts;
+- one raster image asset per surface, stored only in browser memory; object URLs are revoked when an asset is replaced or the page unmounts;
 - rectangular surfaces only in this Lite build;
 - mouse/trackpad desktop editor first;
-- fixed A4 print layout and export PPI stored in the development template;
+- fixed A4 print layout, trim cut guides and export PPI stored in the development template;
 - CSS 3D preview instead of the full future R3F/GLB viewer;
 - no local project save, undo/redo, bleed synthesis, booklet imposition or production calibration.
 

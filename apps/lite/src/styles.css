@@ -321,6 +321,39 @@ output {
   background-size: 100% 100%;
 }
 
+.print-guides {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.print-guide {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 0.3;
+}
+
+.print-guide.cut {
+  stroke: #555;
+}
+
+.print-guide.fold {
+  stroke: #2166a3;
+  stroke-dasharray: 1.5 1.5;
+}
+
+.print-status {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.75rem 0;
+  padding-left: 1.1rem;
+  color: #c6cae0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
 .dev-watermark {
   position: absolute;
   bottom: 0.4rem;

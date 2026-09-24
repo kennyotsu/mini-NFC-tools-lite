@@ -19,6 +19,16 @@ export const PrintPreview = ({ layout, images }: PrintPreviewProps) => (
           backgroundImage: images[placement.surfaceKey] ? `url(${images[placement.surfaceKey]})` : undefined
         }}
       />)}
+      <svg className="print-guides" viewBox={`0 0 ${layout.pageSizeMm.width} ${layout.pageSizeMm.height}`} aria-hidden="true">
+        {layout.guides.map((guide, index) => <line
+          className={`print-guide ${guide.kind}`}
+          key={`${guide.surfaceKey}-${guide.kind}-${index}`}
+          x1={guide.fromMm.x}
+          y1={guide.fromMm.y}
+          x2={guide.toMm.x}
+          y2={guide.toMm.y}
+        />)}
+      </svg>
       <p className="dev-watermark">DEV TEMPLATE — NOT FOR PRODUCTION</p>
     </div>
   </section>

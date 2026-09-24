@@ -3,7 +3,7 @@ import { Image as KonvaImage, Layer, Rect, Stage } from 'react-konva'
 import type { AssetRef, EditorDocument, Placement, ProductTemplate } from '@mini-release/editor-core'
 import { geometryBounds, placementFromProjectedCenter, projectPlacement } from '@mini-release/editor-core'
 
-type BrowserAsset = { ref: AssetRef; url: string; image: HTMLImageElement }
+export type BrowserAsset = { ref: AssetRef; url: string; image: HTMLImageElement }
 
 type EditorProps = {
   template: ProductTemplate

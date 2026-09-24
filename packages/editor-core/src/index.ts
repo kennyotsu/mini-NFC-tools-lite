@@ -185,7 +185,7 @@ export const createRenderPlan = (surface: SurfaceTemplate, placement: Placement 
 })
 
 export const createCoverPlacement = (surface: SurfaceTemplate, asset: AssetRef): Placement => {
-  const bounds = geometryBounds(surface.trim)
+  const bounds = geometryBounds(surface.bleed)
   const assetRatio = asset.widthPx / asset.heightPx
   const surfaceRatio = bounds.widthMm / bounds.heightMm
   const sizeMm = assetRatio > surfaceRatio
@@ -193,13 +193,37 @@ export const createCoverPlacement = (surface: SurfaceTemplate, asset: AssetRef):
     : { width: bounds.widthMm, height: bounds.widthMm / assetRatio }
   return {
     assetId: asset.id,
-    centerMm: { x: bounds.widthMm / 2, y: bounds.heightMm / 2 },
+    centerMm: { x: bounds.xMm + bounds.widthMm / 2, y: bounds.yMm + bounds.heightMm / 2 },
     sizeMm,
     rotationDeg: 0,
     flipX: false,
     flipY: false,
     aspectLock: true
   }
+}
+
+export const placementEffectivePpi = (placement: Placement, asset: AssetRef) => {
+  const widthPpi = (asset.widthPx * 25.4) / placement.sizeMm.width
+  const heightPpi = (asset.heightPx * 25.4) / placement.sizeMm.height
+  return Math.min(widthPpi, heightPpi)
+}
+
+export const placementCoversGeometry = (placement: Placement, geometry: Geometry) => {
+  const bounds = geometryBounds(geometry)
+  const radians = (-placement.rotationDeg * Math.PI) / 180
+  const corners = [
+    { x: bounds.xMm, y: bounds.yMm },
+    { x: bounds.xMm + bounds.widthMm, y: bounds.yMm },
+    { x: bounds.xMm, y: bounds.yMm + bounds.heightMm },
+    { x: bounds.xMm + bounds.widthMm, y: bounds.yMm + bounds.heightMm }
+  ]
+  return corners.every((corner) => {
+    const x = corner.x - placement.centerMm.x
+    const y = corner.y - placement.centerMm.y
+    const localX = x * Math.cos(radians) - y * Math.sin(radians)
+    const localY = x * Math.sin(radians) + y * Math.cos(radians)
+    return Math.abs(localX) <= placement.sizeMm.width / 2 && Math.abs(localY) <= placement.sizeMm.height / 2
+  })
 }
 
 export const projectPlacement = (placement: Placement, pixelsPerMm: number): PlacementProjection => {
@@ -249,6 +273,23 @@ export const createPrintLayout = (template: ProductTemplate, document: EditorDoc
       surfaceOriginOnPageMm: { x: cursorX - bounds.xMm, y: cursorY - bounds.yMm },
       renderPlan
     })
+    const trimBounds = geometryBounds(surface.trim)
+    const trimCorners = [
+      { x: trimBounds.xMm, y: trimBounds.yMm },
+      { x: trimBounds.xMm + trimBounds.widthMm, y: trimBounds.yMm },
+      { x: trimBounds.xMm + trimBounds.widthMm, y: trimBounds.yMm + trimBounds.heightMm },
+      { x: trimBounds.xMm, y: trimBounds.yMm + trimBounds.heightMm }
+    ]
+    for (let index = 0; index < trimCorners.length; index += 1) {
+      const from = trimCorners[index]
+      const to = trimCorners[(index + 1) % trimCorners.length]
+      guides.push({
+        surfaceKey: surface.key,
+        kind: 'cut',
+        fromMm: { x: from.x + cursorX - bounds.xMm, y: from.y + cursorY - bounds.yMm },
+        toMm: { x: to.x + cursorX - bounds.xMm, y: to.y + cursorY - bounds.yMm }
+      })
+    }
     guides.push(...(surface.cutLines ?? []).map((line) => ({
       surfaceKey: surface.key,
       kind: 'cut' as const,

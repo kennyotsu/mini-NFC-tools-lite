@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { createPrintLayout, createRenderPlan, mmToPdfPt, placementFromProjectedCenter, projectPlacement, validateEditorDocument, validateProductTemplate } from './index'
+import { createCoverPlacement, createPrintLayout, createRenderPlan, mmToPdfPt, placementCoversGeometry, placementEffectivePpi, placementFromProjectedCenter, projectPlacement, validateEditorDocument, validateProductTemplate } from './index'
 import type { EditorDocument, ProductTemplate } from './index'
 
 const template: ProductTemplate = {
@@ -47,4 +47,10 @@ assert.deepEqual(projection, { xPx: 94, yPx: 149, widthPx: 332, heightPx: 204, o
 assert.deepEqual(placementFromProjectedCenter(document.surfaces.front.placement!, 200, 300, 4).centerMm, { x: 50, y: 75 })
 assert.deepEqual(layout.placements[0].surfaceOriginOnPageMm, { x: 10, y: 10 })
 assert.deepEqual(layout.guides[0].fromMm, { x: 10, y: 10 })
-assert.deepEqual(layout.guides[0].toMm, { x: 76, y: 10 })
+assert.deepEqual(layout.guides[0].toMm, { x: 72, y: 10 })
+assert.deepEqual(layout.guides[4].toMm, { x: 76, y: 10 })
+
+const asset = { id: 'cover', filename: 'cover.png', widthPx: 1200, heightPx: 1200 }
+const coverPlacement = createCoverPlacement(template.surfaces[0], asset)
+assert.equal(placementCoversGeometry(coverPlacement, template.surfaces[0].bleed), true)
+assert.equal(Math.round(placementEffectivePpi(coverPlacement, asset)), 462)

@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf'
 import { mmToPdfPt, type PrintLayout } from '@mini-release/editor-core'
 
-export type PrintImageMap = Record<string, string>
+export type PrintImageMap = Record<string, string | undefined>
 
 export const createBrowserPdf = (layout: PrintLayout, images: PrintImageMap) => {
   const pdf = new jsPDF({
@@ -19,6 +19,11 @@ export const createBrowserPdf = (layout: PrintLayout, images: PrintImageMap) => 
       mmToPdfPt(placement.rectMm.widthMm),
       mmToPdfPt(placement.rectMm.heightMm)
     )
+  }
+  pdf.setLineWidth(0.35)
+  for (const guide of layout.guides) {
+    pdf.setDrawColor(guide.kind === 'cut' ? 80 : 30, guide.kind === 'cut' ? 80 : 90, guide.kind === 'cut' ? 80 : 170)
+    pdf.line(mmToPdfPt(guide.fromMm.x), mmToPdfPt(guide.fromMm.y), mmToPdfPt(guide.toMm.x), mmToPdfPt(guide.toMm.y))
   }
   pdf.setTextColor(125, 20, 30)
   pdf.setFontSize(8)
